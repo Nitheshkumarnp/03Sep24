@@ -1,4 +1,4 @@
-<!-- This file contains input field for excel file, minimum, maximum field to enter the number of datas required. -->
+<!-- This file is to get user input to download pdf from Phoenix or Gemini live -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -54,7 +54,6 @@
         }
 
         input[type="file"], input[type="number"], input[type="text"], select {
-            /* display: block; */
             margin-bottom: 20px;
             width: 250px;
         }
@@ -104,7 +103,7 @@
         
         function runPythonScript() {
 
-            // Getting ids of tab, fileInput, lowerlimit, upperlimit, timeToLoad, fileName, runButton and output
+            // Getting ids of tab, fileInput, lowerlimit, upperlimit, timeToLoad, runButton and output
             let tab = document.getElementById('tab');
             let fileInput = document.getElementById('fileInput');
             let lowerLimit = document.getElementById('lowerLimit').value;
