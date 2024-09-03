@@ -1,0 +1,175 @@
+<!-- This file contains input field for excel file, minimum, maximum field to enter the number of datas required. -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pdf Download</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+        }
+
+        .container {
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            margin: 0 25%;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin-bottom: 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .output {
+            margin-top: 20px;
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            white-space: pre-wrap;
+        }
+
+        input[type="file"], input[type="number"], input[type="text"], select {
+            /* display: block; */
+            margin-bottom: 20px;
+            width: 250px;
+        }
+
+        .input-components {
+            width: 50%;
+            margin: 0 25%;
+        }
+
+        .components {
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>PDF Download Tool</h1>
+        <div class="components">
+            <label for="tab">Select Tab:</label>
+            <select name="selectTab" id="tab">
+                <option value="phoenix">Phoenix</option>
+                <option value="gemini_live">Gemini Live</option>
+            </select>
+        </div>
+        <div class="components">
+            <label for="fileInput">Select File:</label>
+            <input type="file" id="fileInput" accept=".xlsx">
+        </div>
+        <div class="components">
+            <label for="lowerLimit">Lower Limit:</label>
+            <input type="number" id="lowerLimit" min="2" value="2">
+        </div>
+        <div class="components">
+            <label for="upperLimit">Upper Limit:</label>
+            <input type="number" id="upperLimit" min="2" value="10">
+        </div>
+        <div class="components">
+            <label for="timeToLoad">Loading Time (in seconds):</label>
+            <input type="number" id="timeToLoad" min="60" value="150">
+        </div>
+        <button id="runButton" onclick="runPythonScript()">Run Script</button>
+        <div id="output" class="output"></div>
+    </div>
+
+    <script>
+        
+        function runPythonScript() {
+
+            // Getting ids of tab, fileInput, lowerlimit, upperlimit, timeToLoad, fileName, runButton and output
+            let tab = document.getElementById('tab');
+            let fileInput = document.getElementById('fileInput');
+            let lowerLimit = document.getElementById('lowerLimit').value;
+            let upperLimit = document.getElementById('upperLimit').value;
+            let timeToLoad = document.getElementById('timeToLoad').value;
+            let runButton = document.getElementById('runButton');
+            let outputDiv = document.getElementById('output');
+            runButton.disabled = true;
+            outputDiv.textContent = "";
+
+            // If the file is not selected, then it will throw an alert to select an excel file.
+            if (fileInput.files.length === 0) {
+                alert('Please select an Excel file to upload.');
+                runButton.disabled = false;
+                return;
+            }
+
+            // If lower limit is lesser than 2, then it will throw an alert to set value atleast 2.
+            if(parseInt(lowerLimit) < 2) {
+                alert('Lower limit should be minimum 2');
+                runButton.disabled = false;
+                return;
+            }
+
+            // If upper limit is lesser than lower limit, then it will throw an alert to set upper limit greater than lower limit.
+            if(parseInt(upperLimit) < parseInt(lowerLimit)) {
+                alert('Upper limit should be equal or greater than lower limit');
+                runButton.disabled = false;
+                return;
+            }
+
+            // If timeToLoad is lesser than 60, then it will throw an alert to set loading time greater than 60.
+            if(parseInt(timeToLoad) < 60) {
+                alert('Loading time should be minimum 60 seconds');
+                runButton.disabled = false;
+                return;
+            }
+
+            // Data collected from ids are added to formData which will be sent in API request.
+            let formData = new FormData();
+            formData.append('tab', tab.value);
+            formData.append('file', fileInput.files[0]);
+            formData.append('lower_limit', lowerLimit);
+            formData.append('upper_limit', upperLimit);
+            formData.append('timeToLoad', timeToLoad);
+
+            // API call to automate the process
+            fetch('/download_pdf', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                let outputDiv = document.getElementById('output');
+                runButton.disabled = false;
+                if (data.error) {
+                    outputDiv.textContent = 'Error: ' + data.error;
+                } else {
+                    outputDiv.textContent = data.output;
+                }
+            })
+            .catch(error => {
+                document.getElementById('output').textContent = 'Error: ' + error;
+            });
+        }
+    </script>
+</body>
+</html>
