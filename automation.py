@@ -254,6 +254,11 @@ def automation(driver, tabNumber, inputFieldPath, tableHeaderPath, totalNoOfColu
                 WebDriverWait(driver, 15).until(EC.visibility_of_all_elements_located((By.CLASS_NAME, 'pivotTableCellWrap')))
                 tableData = driver.find_elements(By.CLASS_NAME, 'pivotTableCellWrap')
 
+                # Calculating number of rows, data present
+                noOfRows = int(len(tableData) / tableColumnsBeforeScroll)
+
+                total_rows += (noOfRows - 1)
+
                 # Adding table values to list
                 temp = []
                 if len(tableData) > tableColumnsBeforeScroll:
