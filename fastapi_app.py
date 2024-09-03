@@ -1,4 +1,4 @@
-# This file contains to handle all the scenario of getting details from power BI, excel file merge and excel file join.
+# This file is main file of Backend which contains all the functionality.
 
 from typing import List
 import webbrowser
@@ -162,33 +162,16 @@ async def join_files(file1: UploadFile, file2: UploadFile, file3: UploadFile, co
         selected_lcc_reco_columns = selected_lcc_reco_columns.rename(columns={"PNR": "TKT NO"})
         selected_airlines_columns = selected_airlines_columns.rename(columns={"RecordLocator": "TKT NO"})
 
-        # Print the selected columns
-        # print(selected_airlines_columns.head())
-        # print(selected_travcom_columns.head())
-        # print(selected_lcc_reco_columns.head())
-
         # Perform an outer join based on the specified column
         merged_df = pd.merge(selected_lcc_reco_columns, selected_travcom_columns, on=["TYPE", "TKT NO"], how='outer')
         merged_df = pd.merge(merged_df, selected_airlines_columns, on=["TYPE", "TKT NO"], how='outer')
 
-        # Printing the merged dataframe
-        # print(merged_df.head())
-
-        # print(merged_df.columns)
-
         merged_df = merged_df[renaming_order]
-
-        # print(merged_df.columns)
 
         merged_df.columns = renaming_order_with_prefix
 
-        # print(merged_df.columns)
-
         # Ordering the columns in dataframe
         final_df = merged_df
-
-        # Printing the ordered columns
-        # print(final_df.head())
 
     else:
 
@@ -220,27 +203,17 @@ async def join_files(file1: UploadFile, file2: UploadFile, file3: UploadFile, co
         selected_travcom_columns = travcom_df[travcom_columns]
         selected_bsp_reco_columns = bsp_reco_df[bsp_reco_columns]
 
-        # Print the selected columns
-        # print(selected_statement_columns.head())
-        # print(selected_travcom_columns.head())
-        # print(selected_bsp_reco_columns.head())
-
         # Perform an outer join based on the specified column
         merged_df = pd.merge(selected_bsp_reco_columns, selected_travcom_columns, on=["TKTT TYPE", "Ticket No"], how='outer')
         merged_df = pd.merge(merged_df, selected_statement_columns, on=["TKTT TYPE", "Ticket No"], how='outer')
-
-        # Printing the merged dataframe
-        # print(merged_df.head())
 
         # Ordering the columns in dataframe
         merged_df = merged_df[renaming_order]
 
         merged_df.columns = renaming_order_with_prefix
 
+        # Ordering the columns in dataframe
         final_df = merged_df
-
-        # Printing the ordered columns
-        # print(final_df.head())
 
     # Save the merged DataFrame to an Excel file in memory
     output = BytesIO()

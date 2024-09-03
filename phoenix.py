@@ -1,5 +1,4 @@
-#   This file is the most updated file.
-
+#   This file will run the automation of downloading pdf from Phoenix.
 
 import logging
 import os
@@ -58,7 +57,6 @@ else:
     timeToLoad = int(sys.argv[4])
 
 # Gets list of id values come from method's output
-# ids_to_search = ['WUWCH2', 'NWKQ6ZA']     # For Testing purpose
 ids_to_search = read_ids_from_excel(excel_file_path, lower_limit, upper_limit)
 
 # Adding id list to logs and removing duplicates
@@ -69,9 +67,6 @@ logging.info(f'Unique number of ids = {len(ids_to_search)}')
 logging.info(ids_to_search)
 
 # Initialize the WebDriver
-# If the web driver can be accessed by any location, no need to give the path.
-# chrome_driver_path = "C:\\Users\\ganesh.ss\\Desktop\\chromedriver-win64\\chromedriver.exe"  # Replace with the actual path
-# driver = webdriver.Chrome(service=Service(chrome_driver_path))
 driver = webdriver.Chrome()
 
 # URL of the web page
@@ -252,8 +247,11 @@ def automation(idList):
 
     except:
         
+        # Number of Cart Numbers not found:
+        logging.info(f'Number of Cart Numbers not found :  {len(CartNumbersNotFound)}')
+
         # Cart Numbers not found List
-        logging.info('Cart Numbers not found : ', CartNumbersNotFound)
+        logging.info(f'Cart Numbers not found : {CartNumbersNotFound}')
 
         # Returning the Updated result
         return f'Total Rows = {index+1}, Last PNR = {search_id}, Total Invoice downloaded = {totalInvoiceDownloaded}'

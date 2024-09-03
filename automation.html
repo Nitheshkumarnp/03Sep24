@@ -1,4 +1,4 @@
-<!-- This file contains input field for excel file, minimum, maximum field to enter the number of datas required. -->
+<!-- This file is to get user input for Power BI automation of LCC and BSP tabs. -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -54,7 +54,6 @@
         }
 
         input[type="file"], input[type="number"], input[type="text"], select {
-            /* display: block; */
             margin-bottom: 20px;
             width: 250px;
         }
@@ -73,7 +72,6 @@
 <body>
     <div class="container">
         <h1>Power BI Automation Tool</h1>
-        <!-- <div class="input-components1"> -->
         <div class="components">
             <label for="tab">Select Tab:</label>
             <select name="selectTab" id="tab">
@@ -103,7 +101,6 @@
             <label for="fileName">File name:</label>
             <input type="text" id="fileName" placeholder="Enter file name to extract in excel format">
         </div>
-        <!-- </div> -->
         <button id="runButton" onclick="runPythonScript()">Run Script</button>
         <div id="output" class="output"></div>
     </div>

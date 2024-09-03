@@ -1,7 +1,4 @@
-#   This file is working well and used for all the 4 tabs it's original code taken from adding-changes-on-working-fine-code.py
-#   which present in 22Aug24 folder of Ganesh sir system code.
-
-#   In this file, I am removing unwanted codes and updating the comments.
+#   This file will automate the process of extracting data from Power BI in LCC and BSP tabs.
 
 import logging
 import os
@@ -74,9 +71,6 @@ logging.info(f'Unique number of ids = {len(ids_to_search)}')
 logging.info(ids_to_search)
 
 # Initialize the WebDriver
-# If the web driver can be accessed by any location, no need to give the path.
-# chrome_driver_path = "C:\\Users\\ganesh.ss\\Desktop\\chromedriver-win64\\chromedriver.exe"  # Replace with the actual path
-# driver = webdriver.Chrome(service=Service(chrome_driver_path))
 driver = webdriver.Chrome()
 
 # URL of the web page
@@ -137,7 +131,9 @@ def automation(driver, tabNumber, inputFieldPath, tableHeaderPath, totalNoOfColu
         tabContainer = driver.find_element(By.TAG_NAME, 'mat-action-list')
         tabList = tabContainer.find_elements(By.TAG_NAME, 'button')
         tabList[tabNumber].click()
-        time.sleep(5)
+
+        # Setting time to edit the other fields
+        time.sleep(15)
 
         # Iterating ids
         total_rows = 0
@@ -146,7 +142,7 @@ def automation(driver, tabNumber, inputFieldPath, tableHeaderPath, totalNoOfColu
                 break
 
             # Navigating to input field to enter the ids and switch to default content.
-            WebDriverWait(driver, timeToLoad).until(EC.visibility_of_element_located((By.TAG_NAME, 'visual-container')))
+            WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.TAG_NAME, 'visual-container')))
             visualContainers = driver.find_elements(By.TAG_NAME, 'visual-container')
             iframe = visualContainers[inputFieldPath].find_element(By.TAG_NAME, 'iframe')
             driver.switch_to.frame(iframe)
