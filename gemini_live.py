@@ -1,4 +1,4 @@
-#   This file will run the automation of downloading pdf from Gemini live.
+#   This file is the most updated file.
 
 import logging
 import os
@@ -57,6 +57,7 @@ else:
     timeToLoad = int(sys.argv[4])
 
 # Gets list of id values come from method's output
+# ids_to_search = ['Q28QTF']     # For Testing purpose
 ids_to_search = read_ids_from_excel(excel_file_path, lower_limit, upper_limit)
 
 # Adding id list to logs and removing duplicates
@@ -66,7 +67,22 @@ ids_to_search = list(dict.fromkeys(ids_to_search))
 logging.info(f'Unique number of ids = {len(ids_to_search)}')
 logging.info(ids_to_search)
 
+# Define the file path to read credentials
+file_path = 'credentials.txt'
+
+# Open the file and read the first four lines
+with open(file_path, 'r') as file:
+    first_mail_id = file.readline().strip()
+    first_mail_id_password = file.readline().strip()  
+    second_mail_id = file.readline().strip()
+    second_mail_id_password = file.readline().strip()
+    download_path = file.readline().strip()
+
+
 # Initialize the WebDriver
+# If the web driver can be accessed by any location, no need to give the path.
+# chrome_driver_path = "C:\\Users\\ganesh.ss\\Desktop\\chromedriver-win64\\chromedriver.exe"  # Replace with the actual path
+# driver = webdriver.Chrome(service=Service(chrome_driver_path))
 driver = webdriver.Chrome()
 
 # URL of the web page
@@ -79,20 +95,20 @@ driver.maximize_window()
 driver.get(url)
 
 # Mail id
-WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="okta-signin-username"]')))
-mailId = driver.find_element(By.XPATH, '//*[@id="okta-signin-username"]')
-mailId.send_keys('ganesh.ss@fcmin.com')
-mailId.send_keys(Keys.TAB)
+WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="idp-discovery-username"]')))
+mailId = driver.find_element(By.XPATH, '//*[@id="idp-discovery-username"]')
+mailId.send_keys(second_mail_id)
+mailId.send_keys(Keys.RETURN)
 
 # Mail id password
 WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="okta-signin-password"]')))
 mailPassword = driver.find_element(By.XPATH, '//*[@id="okta-signin-password"]')
-mailPassword.send_keys('Ganu@87654321')
+mailPassword.send_keys(second_mail_id_password)
 mailPassword.send_keys(Keys.RETURN)
 
 # Push Button
-WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="form63"]/div[2]/input')))
-pushButton = driver.find_element(By.XPATH, '//*[@id="form63"]/div[2]/input')
+WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="form97"]/div[2]/input')))
+pushButton = driver.find_element(By.XPATH, '//*[@id="form97"]/div[2]/input')
 pushButton.click()
 
 # PHX Booking India
@@ -100,8 +116,8 @@ WebDriverWait(driver, 300).until(EC.visibility_of_element_located((By.XPATH, '//
 fcmTab = driver.find_element(By.XPATH, '//*[@id="main-content"]/section/section/section/div/section/div[14]')
 fcmTab.click()
 
-# Waiting time to close the login tab
-time.sleep(20)
+# Waiting time to close the login tab and setting for stop pdf automatic openning after download
+time.sleep(150)
 
 # Get handles of all currently open windows
 window_handles = driver.window_handles
@@ -161,11 +177,13 @@ def automation(idList):
             time.sleep(1)
             searchValue = driver.find_element(By.XPATH, '//*[@id="travelDashboardForm:searchInputText"]')
             searchValue.send_keys(search_id)
+            searchValue.send_keys(Keys.RETURN)
 
             # Click on Search Button
-            WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.XPATH, '/html/body/div[1]/div[1]/div[2]/div/div[3]/div/form/div[3]/div[4]/div/button')))
-            searchButton = driver.find_element(By.XPATH, '/html/body/div[1]/div[1]/div[2]/div/div[3]/div/form/div[3]/div[4]/div/button')
-            searchButton.click()
+            # WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.XPATH, '/html/body/div[1]/div[1]/div[2]/div/div[3]/div/form/div[3]/div[4]/div/button')))
+            # time.sleep(1)
+            # searchButton = driver.find_element(By.XPATH, '/html/body/div[1]/div[1]/div[2]/div/div[3]/div/form/div[3]/div[4]/div/button')
+            # searchButton.click()
 
             # Checking for Cart Number
             try:

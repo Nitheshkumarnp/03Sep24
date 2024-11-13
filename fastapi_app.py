@@ -141,15 +141,10 @@ async def join_files(file1: UploadFile, file2: UploadFile, file3: UploadFile, co
 
         # Specify the column names you want to select
         airlines_columns = ["TYPE", "RecordLocator", "Sum of AMOUNT", "P Code", "Transation Date", "Airline Name", "BRANCH", "Name1"]
-
         travcom_columns = ["TYPE", "TKT NO", "FINALAMOUNT", "INVOICE NO", "DOC_DT", "SLMASTER", "CLIENT NAME", "BRANCH", "PAX NAME"]
-
         lcc_reco_columns = ["TKTT TYPE", "PNR", "TRAVCOM AMOUNT", "AIRLINE AMOUNT", "Difference", "Exception Remarks", "DOCUMENT NO", "DATE", "AIRLINE", "CLIENT", "Branch", "PAX NAME"]
-
         required_order = ["TYPE", "TKT NO", "TRAVCOM AMOUNT", "AIRLINE AMOUNT", "Difference", "Sum of AMOUNT", "FINALAMOUNT", "P Code", "Exception Remarks", "DOCUMENT NO", "INVOICE NO", "DATE", "Transation Date", "DOC_DT", "AIRLINE", "Airline Name", "SLMASTER", "CLIENT", "CLIENT NAME", "Branch", "BRANCH", "BRANCH", "PAX NAME", "Name1", "PAX NAME"]
-
         renaming_order = ["TYPE", "TKT NO", "TRAVCOM AMOUNT", "AIRLINE AMOUNT", "Difference", "Sum of AMOUNT", "FINALAMOUNT", "P Code", "Exception Remarks", "DOCUMENT NO", "INVOICE NO", "DATE", "Transation Date", "DOC_DT", "AIRLINE", "Airline Name", "SLMASTER", "CLIENT", "CLIENT NAME", "Branch", "BRANCH_x", "BRANCH_y", "PAX NAME_x", "Name1", "PAX NAME_y"]
-
         renaming_order_with_prefix = ["TYPE", "TKT NO", "Reco_TRAVCOM AMOUNT", "Reco_AIRLINE AMOUNT", "Reco_Difference", "Air_Sum of AMOUNT", "Tr_FINALAMOUNT", "Air_P Code", "Reco_Exception Remarks", "Reco_DOCUMENT NO", "Tr_INVOICE NO", "Reco_DATE", "Air_Transation Date", "Tr_DOC_DT", "Reco_AIRLINE", "Air_Airline Name", "Tr_SLMASTER", "Reco_CLIENT", "Tr_CLIENT NAME", "Reco_Branch", "Air_BRANCH", "Tr_BRANCH", "Tr_PAX NAME", "Air_Name1", "Reco_PAX NAME"]
 
         # Extract the specified columns
@@ -259,11 +254,29 @@ async def run_script(file: UploadFile = File(...), lower_limit: int = Form(...),
 async def pdf_to_excel(files: List[UploadFile] = File(...), fileName: str = Form(...)):
     
     try:
-        required_list = ['Tax Invoice Number', 'Tax Invoice Date', 'Credit Note Number', 'Credit Note Date', 'Client Name', 'Cart Ref', 'Airline PNR', 'Orig Inv#', 'Orig Inv Date', 'Pax Name', 'From Ticket No', 'Total Fare', 'Add: Meal/Seat/Bag Charge', 'Gross Fare', 'Add: Service Charge', 'Add: Financial Charge', 'Total Charges', 'Less: Trade Discount', 'Add: GST Tax', 'Total', 'Form of Payment', 'Mail ID']
         
-        # Currently available, 3 missing
-        excel_list = ['Tax Invoice Number', 'Tax Invoice Date', 'Credit Note Number', 'Credit Note Date', 'Cart Ref', 'Airline PNR', 'Orig Inv#', 'Orig Inv Date', 'Total Fare', 'Add: Meal/Seat/Bag Charge', 'Gross Fare', 'Add: Service Charge', 'Add: Financial Charge', 'Total Charges', 'Less: Trade Discount', 'Add: GST Tax', 'Total', 'Form of Payment', 'Mail ID']
+        # Header list
+        excel_list = ['Tax Invoice Number', 'Tax Invoice Date', 'Credit Note Number', 'Credit Note Date', 'Client Name', 'Cart Ref', 'Airline PNR', 'Orig Inv#', 'Orig Inv Date', 'Pax Name', 'From Ticket No', 'Total Fare', 'Add: Meal/Seat/Bag Charge', 'Gross Fare', 'Add: Service Charge', 'Add: Financial Charge', 'Total Charges', 'Less: Trade Discount', 'Add: GST Tax', 'Total', 'Form of Payment', 'Mail ID']
         total_columns = len(excel_list)
+
+        # find page using keywords
+        def find_page_with_keyword(pdf_path, keyword):
+            with pdfplumber.open(pdf_path) as pdf:
+                num_pages = len(pdf.pages)
+                for i in range(num_pages - 1, -1, -1):  # Iterate in reverse order
+                    page = pdf.pages[i]
+                    text = page.extract_text()
+                    if keyword.lower() in text.lower():
+                        return i + 1, text  # Return 1-based page index and text
+            return None, None  # If the keyword is not found
+
+        # Function to find index of a value
+        def find_index(value, lst):
+            try:
+                return lst.index(value)
+            except ValueError:
+                return -1
+
         def find_next_value_using_pair(pair):
             found_pairs = {}
             found_pairs[pair] = 'Not found'
@@ -275,7 +288,10 @@ async def pdf_to_excel(files: List[UploadFile] = File(...), fileName: str = Form
                         found_pairs[pair] = lists[i+3]
                     break
                 if len(pair) == 2 and lists[i] == pair[0] and lists[i + 1] == pair[1]:
-                    found_pairs[pair] = lists[i+2]
+                    if pair[0] == 'Cart':
+                        found_pairs[pair] = lists[i+2][:11]
+                    else:
+                        found_pairs[pair] = lists[i+2]
                     break
                 if lists[i] == pair:
                     found_pairs[pair] = lists[i+1]
@@ -283,56 +299,84 @@ async def pdf_to_excel(files: List[UploadFile] = File(...), fileName: str = Form
             # print(found_pairs)
             excel_list.append(found_pairs[pair])
             return None
-
-        def find_next_value_using_pair_with_condition(pair):
-            found_pairs = {}
-            found_pairs[pair] = 'Not found'
+        
+        def find_continuity():
+            value_not_found = True
             for i in range(len(lists) - 1):
-                if len(pair) == 2 and pair[0] == 'Airline' and pair[1] == 'PNR' and lists[i] == pair[0] and lists[i + 1] == pair[1] and lists[i-2] == 'Ref':
-                    found_pairs[pair] = lists[i+2]
+                if lists[i] == lists[i+1] and i > 100:
+                    excel_list.append(lists[i])  
+                    value_not_found = False
+                    break    
+            if value_not_found:
+                excel_list.append('Not found')
+            return None
+        
+        def find_between_value_with_condition1(value1, value2):
+            value_not_found = True
+            for i in range(len(lists) - 1):
+                if lists[i] == value1 and lists[i+2] == value2:
+                    excel_list.append(lists[i+1])
+                    value_not_found = False
                     break
-            # print(found_pairs)
-            excel_list.append(found_pairs[pair])
+            if value_not_found:
+                excel_list.append('Not found')
+            return None
+        
+        def find_between_value_with_condition2(value1, value2, value3):
+            if value3 in lists:
+                end_index = lists.index(value3)
+                for i in range(len(lists) - 1):
+                    if lists[i] == value1 and lists[i+1] == value2 and (end_index - i) < 10:
+                        customer_name = ' '.join(lists[i+2: end_index])
+                        excel_list.append(customer_name)
+            else:
+                excel_list.append('Not found')
             return None
 
+        # Keyword to search for
+        keyword = "form of payment"
 
-        for file in files:
+        for pdf in files:
         # Open the PDF and extract text
             try:
-                with pdfplumber.open(file.file) as pdf:
-                    text = ""
-                    for page in pdf.pages:
-                        text += page.extract_text()
-                    data = [line.split() for line in text.split('\n') if line.strip() != '']
-                    lists = [item for sublist in data for item in sublist]
+                page_number, page_text = find_page_with_keyword(pdf.file, keyword)
+                data = [line.split() for line in page_text.split('\n') if line.strip() != '']
+                first_row = data[1]
+                values_to_find = ['Invoice', 'REFUND']
+                indices = [find_index(value, first_row) for value in values_to_find]
+                index = max(indices)
+                company_name_list = first_row[index+1:]
+                company_name = " ".join(company_name_list)
+                lists = [item for sublist in data for item in sublist]
+
+                # Let's find values for both Tax Invoice and Credit Note
+                tax_invoice_number = find_next_value_using_pair(('Invoice', 'Number', ':'))
+                tax_invoice_date = find_next_value_using_pair(('Invoice', 'Date', ':'))
+                credit_note_number = find_next_value_using_pair(('Credit', 'Note:'))
+                credit_note_date = find_next_value_using_pair(('Note', ':'))
+                client_name = excel_list.append(company_name)
+                cart_ref = find_next_value_using_pair(('Cart', 'Ref'))
+                pnr = find_between_value_with_condition1('PNR', 'Ticket')
+                original_invoice = find_next_value_using_pair(('Orig', 'Inv#'))
+                original_invoice_date = find_next_value_using_pair(('Orig', 'Inv', 'Date'))
+                pax_name = find_between_value_with_condition2('Pax', 'Name', 'Itinerary')
+                from_ticket_no = find_continuity()
+                total_fare = find_next_value_using_pair(('Total', 'Fare:'))
+                add_meal_seat_bag_charge = find_next_value_using_pair(('Add:Meal/Seat/Bag', 'Charge:'))
+                gross_fare = find_next_value_using_pair(('Gross', 'Fare:'))
+                add_service_charge = find_next_value_using_pair(('Service', 'Charge:'))
+                add_financial_charge = find_next_value_using_pair(('Financial', 'Charge:'))
+                total_charges = find_next_value_using_pair(('Total', 'Charges:'))
+                less_trade_discount = find_next_value_using_pair(('Trade', 'Discount:'))
+                add_gst_tax = find_next_value_using_pair(('Add:', 'GST', 'Tax'))
+                total = find_next_value_using_pair(('Total:'))
+                form_of_payment = find_next_value_using_pair(('of', 'Payment', ':'))
+                mail_id = find_next_value_using_pair(('Issued', 'By', ':'))
+
             except:
+                
                 continue
 
-            # Let's find values for both Tax Invoice and Credit Note
-            tax_invoice_number = find_next_value_using_pair(('Invoice', 'Number', ':'))
-            tax_invoice_date = find_next_value_using_pair(('Invoice', 'Date', ':'))
-            credit_note_number = find_next_value_using_pair(('Credit', 'Note:'))
-            credit_note_date = find_next_value_using_pair(('Note', ':'))
-            client_name = ''
-            cart_ref = find_next_value_using_pair(('Cart', 'Ref'))
-            pnr = find_next_value_using_pair_with_condition(('Airline', 'PNR'))
-            original_invoice = find_next_value_using_pair(('Orig', 'Inv#'))
-            original_invoice_date = find_next_value_using_pair(('Orig', 'Inv', 'Date'))
-            pax_name = ''
-            from_ticket_no = ''
-            total_fare = find_next_value_using_pair(('Total', 'Fare:'))
-            add_meal_seat_bag_charge = find_next_value_using_pair(('Add:Meal/Seat/Bag', 'Charge:'))
-            gross_fare = find_next_value_using_pair(('Gross', 'Fare:'))
-            add_service_charge = find_next_value_using_pair(('Service', 'Charge:'))
-            add_financial_charge = find_next_value_using_pair(('Financial', 'Charge:'))
-            total_charges = find_next_value_using_pair(('Total', 'Charges:'))
-            less_trade_discount = find_next_value_using_pair(('Trade', 'Discount:'))
-            add_gst_tax = find_next_value_using_pair(('Add:', 'GST', 'Tax'))
-            total = find_next_value_using_pair(('Total:'))
-            form_of_payment = find_next_value_using_pair(('of', 'Payment', ':'))
-            mail_id = find_next_value_using_pair(('Issued', 'By', ':'))
-
-        # print(excel_list)
         # Create an Excel workbook and sheet
         workbook = openpyxl.Workbook()
         sheet = workbook.active
@@ -342,8 +386,20 @@ async def pdf_to_excel(files: List[UploadFile] = File(...), fileName: str = Form
         for i in range(0,len(excel_list), total_columns):
             sheet.append(excel_list[i: i+total_columns])
 
+
+        # Define the file path to read credentials
+        file_path = 'credentials.txt'
+
+        # Open the file and read the first four lines
+        with open(file_path, 'r') as file:
+            first_mail_id = file.readline().strip()
+            first_mail_id_password = file.readline().strip()  
+            second_mail_id = file.readline().strip()
+            second_mail_id_password = file.readline().strip()
+            download_path = file.readline().strip()
+
         # Specify the directory where you want to save the file
-        directory = 'C:\\Users\\ganesh.ss\\Downloads'
+        directory = download_path
         # directory = 'C:\\Users\\nithe\\Downloads'
 
         # Construct the full file path
@@ -368,7 +424,8 @@ async def pdf_to_excel(files: List[UploadFile] = File(...), fileName: str = Form
 
         # Save the Excel file
         workbook.save(base_filename)
-        return JSONResponse(content={'output': 'successfully extracted'})
+        output = f'Total rows generated = {int(len(excel_list)/total_columns) - 1} \n successfully extracted'
+        return JSONResponse(content={'output': output})
     
     except Exception as e:
 

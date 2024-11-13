@@ -1,4 +1,7 @@
-#   This file will automate the process of extracting data from Power BI in LCC and BSP tabs.
+#   This file is working well and used for all the 4 tabs it's original code taken from adding-changes-on-working-fine-code.py
+#   which present in 22Aug24 folder of Ganesh sir system code.
+
+#   In this file, I am removing unwanted codes and updating the comments.
 
 import logging
 import os
@@ -70,7 +73,21 @@ ids_to_search = list(dict.fromkeys(ids_to_search))
 logging.info(f'Unique number of ids = {len(ids_to_search)}')
 logging.info(ids_to_search)
 
+# Define the file path to read credentials
+file_path = 'credentials.txt'
+
+# Open the file and read the first four lines
+with open(file_path, 'r') as file:
+    first_mail_id = file.readline().strip()
+    first_mail_id_password = file.readline().strip()  
+    second_mail_id = file.readline().strip()
+    second_mail_id_password = file.readline().strip()
+    download_path = file.readline().strip()
+
 # Initialize the WebDriver
+# If the web driver can be accessed by any location, no need to give the path.
+# chrome_driver_path = "C:\\Users\\ganesh.ss\\Desktop\\chromedriver-win64\\chromedriver.exe"  # Replace with the actual path
+# driver = webdriver.Chrome(service=Service(chrome_driver_path))
 driver = webdriver.Chrome()
 
 # URL of the web page
@@ -85,19 +102,19 @@ driver.maximize_window()
 # First mail id
 WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="email"]')))
 firstMailId = driver.find_element(By.XPATH, '//*[@id="email"]')
-firstMailId.send_keys('ganesh.ss@in.fcm.travel')
+firstMailId.send_keys(first_mail_id)
 firstMailId.send_keys(Keys.RETURN)
 
 # Second mail id
 WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="okta-signin-username"]')))
 secondMailId = driver.find_element(By.XPATH, '//*[@id="okta-signin-username"]')
-secondMailId.send_keys('ganesh.ss@fcmin.com')
+secondMailId.send_keys(second_mail_id)
 secondMailId.send_keys(Keys.TAB)
 
 # Second mail id password
 WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="okta-signin-password"]')))
 secondMailId = driver.find_element(By.XPATH, '//*[@id="okta-signin-password"]')
-secondMailId.send_keys('Ganu@87654321')
+secondMailId.send_keys(first_mail_id_password)
 secondMailId.send_keys(Keys.RETURN)
 
 # Push Button
@@ -131,9 +148,7 @@ def automation(driver, tabNumber, inputFieldPath, tableHeaderPath, totalNoOfColu
         tabContainer = driver.find_element(By.TAG_NAME, 'mat-action-list')
         tabList = tabContainer.find_elements(By.TAG_NAME, 'button')
         tabList[tabNumber].click()
-
-        # Setting time to edit the other fields
-        time.sleep(15)
+        time.sleep(5)
 
         # Iterating ids
         total_rows = 0
@@ -142,7 +157,7 @@ def automation(driver, tabNumber, inputFieldPath, tableHeaderPath, totalNoOfColu
                 break
 
             # Navigating to input field to enter the ids and switch to default content.
-            WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.TAG_NAME, 'visual-container')))
+            WebDriverWait(driver, timeToLoad).until(EC.visibility_of_element_located((By.TAG_NAME, 'visual-container')))
             visualContainers = driver.find_elements(By.TAG_NAME, 'visual-container')
             iframe = visualContainers[inputFieldPath].find_element(By.TAG_NAME, 'iframe')
             driver.switch_to.frame(iframe)
@@ -334,7 +349,7 @@ for i in range(0,len(data), totalNoOfColumns):
     sheet.append(data[i: i+totalNoOfColumns])
 
 # Specify the directory where you want to save the file
-directory = 'C:\\Users\\ganesh.ss\\Downloads'
+directory = download_path
 
 # Construct the full file path
 file_path = os.path.join(directory, fileName)

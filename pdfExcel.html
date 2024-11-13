@@ -1,4 +1,4 @@
-<!-- This file is to get user input to convert pdf to excel -->
+<!-- This file contains input field for excel file, minimum, maximum field to enter the number of datas required. -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -54,6 +54,7 @@
         }
 
         input[type="file"], input[type="number"], input[type="text"], select {
+            /* display: block; */
             margin-bottom: 20px;
             width: 250px;
         }
@@ -87,7 +88,7 @@
     <script>
         function runPythonScript() {
 
-            // Getting ids of tab, fileInput, fileName, runButton and output
+            // Getting ids of tab, fileInput, lowerlimit, upperlimit, timeToLoad, fileName, runButton and output
             let fileInput = document.getElementById('fileInput');
             let fileName = document.getElementById('fileName').value;
             let runButton = document.getElementById('runButton');
