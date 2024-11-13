@@ -1,0 +1,196 @@
+This is the complete documentation of Automation Project. Let's see the requirements, steps, procedure, frequent problems and its solutions.
+
+Initial Requirements while setup on new system:
+
+    Install Python,
+    Install Chromedriver.
+
+Setup the Project Folder:
+
+    After installation of Python and Chromedriver, copy the project folder from old system and paste in required folder.
+
+Installation of Python Packages:
+
+    Click on search bar, placed in task bar.
+    Type `cmd`, you will see command prompt, click it.
+    After opening command prompt, type `pip install -r requirements.txt`.
+
+Configuration in Project:
+
+    Open credentials.txt file.
+    Set the username, password and path of downloads.
+    After entering all the values, save and close it.
+
+Start the Project:
+
+    To start the project, double click on run.bat file present inside the project folder.
+    It will automatically start the project and open in chrome browser.
+    While click on run.bat file, a new command prompt will be opened.
+    Don't close the command prompt, application runs from that command prompt.
+
+Features in Project:
+
+    Power BI Automation,
+    Excel File Merge,
+    Excel File Join,
+    Pdf Download,
+    Pdf to Excel.
+
+Let's see each features in detail:
+
+    Power BI Automation:
+
+        Power BI Automation is the automation task which runs to get data from Power BI web application and convert it to excel file and store in downloads.
+        This is done to reduce the manual work to get data from Power BI.
+
+        Configurations:
+
+            Select Tab  : It contains LCC Airlines Data, LCC Travcom Data, BSP Statement, BSP Travcom Data. Select which one going to perform.
+            Select File : Choose the file which contains the Ticket Number or PNR based on LCC or BSP.
+            Lower Limit : It should be minimum 2, 2 represents line of the selected file. 1 line contain heading.
+            Upper Limit : It should be any value and must be greater than Lower limit.
+            Loading Time: It is the time duration set to approve or enter Okta autentication.
+            File name   : This should be any name given by user to download the excel file in mentioned file name.
+
+        Requirements:
+
+            Selected file should contain only one tab and only one column. In column, first line should be heading, data should start from second line.
+            All the configurations are mandatory, you should not able to start the process without filling all the values. 
+            After all the configurations entered, click on Run Script button to start the automation process.
+            Don't click or move the mouse while running of automation.
+
+        Result:
+
+            After automation process started, new chrome browser application will open in task bar. Click on that.
+            Close the small tab which contain Chrome is being run by Selenium.
+            Approve the Okta autentication.
+            It start the process of entering the each values one by one and store in excel file.
+            Please wait till all the data completes.
+            Once the process is success, newly opened browser will close automatically and comes back to automation page.
+            Once the excel file generated, it display the results.
+            Check the downloads.
+
+        Problems face during automation process:
+
+            Watch the application till it went to Power BI application.
+            If any problems comes after Power BI application, newly opened browser will close and back to automation page and save till the recent data.
+            If the problem comes before entering Power BI application, try to understand reason or else refresh the automation page and start the process again.
+        
+    Excel File Merge:
+
+        Excel File Merge is the process of adding 2 or more excel files which contains same type of data.
+        Eg. If you have 2 or more LCC travcom excel files and want to make a single excel file, it will be helpful.
+
+        Configurations:
+
+            Select Files: Choose the files which you want to merge into a single file.
+            File Name   : This should be any name given by user to download the excel file which in mentioned file name.
+
+        Requirements:
+
+            Selecting files should have same number of columns and same name of columns. Mismatch in columns will create error.
+            After selecting files and giving name, click on the Download button.
+            It will run behind in the same screen. You have to wait till it completes.
+
+        Result:
+
+            Once the process completed, it display the results.
+            Check the downloads.
+
+        Problems face during process:
+
+            Due to column mismatch or file mismatch, it will throw the error.
+            There will be no other reason. If any error comes, check column names, it will be case sensitivity.
+
+    Excel File Join:
+
+        Excel File Join is the process of combining 3 different excel files.
+        3 Excel files are Reco, LCC Airlines and LCC Travcom (or) Reco, BSP Statement and BSP Travcom.
+
+        Configurations:
+
+            Select Tab                  : It contains LCC and BSP. Choose which one going to perform.
+            Reco File                   : Choose the Original File.
+            Airlines or Statement File  : Choose Airlines for LCC, Statement for BSP process.
+            Travcom File                : Choose Travcom file.
+            File Name                   : This should be any name given by user to download the excel file which in mentioned file name.
+
+        Requirements:
+
+            If LCC tab selected, Selected Files should be Reco, LCC Airlines and LCC Travcom.
+            If BSP tab selected, Selected Files should be Reco, BSP Statement and BSP Travcom.
+            After selecting files and giving file name, click on Download button.
+            It will run behind in the same screen. You have to wait until it completes.
+
+        Result:
+
+            Once the process completed, it display the results.
+            Check the downloads.
+
+        Problems face during process:
+
+            Due to mismatch of excel file selection. Eg. For LCC, Files are Reco, LCC Airlines and BSP Statement.
+            There will be no other reason. If any error comes, check column names, it will be case sensitivity.
+
+    Pdf Download:
+
+        Pdf Download is the automation task which runs to download invoices from Phoenix or Gemini Live and store in downloads.
+        This is done to reduce the manual work to download invoices from Phoenix and Gemini Live.
+
+        Configurations:
+
+            Select Tab  : It contains Phoenix and Gemini Live. Select which one going to perform.
+            Select File : Choose the file which contains PNR.
+            Lower Limit : It should be minimum 2, 2 represents line of the selected file. 1 line contain heading.
+            Upper Limit : It should be any value and must be greater than Lower limit.
+            Loading Time: It is the time duration set to approve or enter Okta autentication.
+
+        Requirements:
+
+            Selected file should contain only one tab and only one column. In column, first line should be heading, data should start from second line.
+            All the configurations are mandatory, you should not able to start the process without filling all the values. 
+            After all the configurations entered, click on Run Script button to start the automation process.
+            Don't click or move the mouse while running of automation.
+
+        Result:
+
+            After automation process started, new chrome browser application will open in task bar. Click on that.
+            Note: 
+                Based on the screen resolution, You should decide whether it works without closing or with closing small tab.
+                If required, close the small tab which contain Chrome is being run by Selenium.
+            Approve the Okta autentication.
+            It start the process of entering the each values one by one and store in excel file.
+            Please wait till all the data completes.
+            Once the process is success, newly opened browser will close automatically and comes back to pdf download page.
+            Once all the PNRs searched, it display the results.
+            Check the downloads.
+
+        Problems face during automation process:
+
+            Watch the application till it went to Phoenix or Gemini Live application.
+            If any problems comes after Phoenix or Gemini Live application, newly opened browser will close and back to pdf download page and save till the recent data.
+            If the problem comes before entering Phoenix or Gemini Live application, try to understand reason or else refresh the pdf download page and start the process again.
+
+    Pdf to Excel:
+
+        Pdf to Excel is the process of extracting specific data from pdf and store in excel file.
+        After pdf files are downloaded, upload the pdf files to get the information in excel format.
+
+        Configurations:
+
+            Select PDF Files: Choose the files which you want to extract information.
+            File Name       : This should be any name given by user to download the excel file which in mentioned file name.
+
+        Requirements:
+
+            After selecting files and giving name, click on the Run Script button.
+            It will run behind in the same screen. You have to wait till it completes.
+
+        Result:
+
+            Once the process completed, it display the results.
+            Check the downloads.
+
+        Problems face during process:
+
+            Selected file should contain invoice details. Otherwise, it will throw error.
