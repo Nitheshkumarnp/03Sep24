@@ -137,8 +137,8 @@ action = ActionChains(driver)
 action.move_to_element(profileName).perform()
 
 # Selecting V - Vendor
-WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="menuProfileForm:roleMenu"]/ul/li/ul/li[3]')))
-vendor = driver.find_element(By.XPATH, '//*[@id="menuProfileForm:roleMenu"]/ul/li/ul/li[3]')
+WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="menuProfileForm:roleMenu"]/ul/li/ul/li[5]')))
+vendor = driver.find_element(By.XPATH, '//*[@id="menuProfileForm:roleMenu"]/ul/li/ul/li[5]')
 vendor.click()
 
 # Count for total number of invoice downloaded
@@ -167,15 +167,16 @@ def automation(idList):
             searchBy.click()
 
             # Selecting Airline PNR
-            WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="travelDashboardForm:searchFilter_2"]')))
+            WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="travelDashboardForm:searchFilter_10"]')))
             time.sleep(1)
-            airlinePNR = driver.find_element(By.XPATH, '//*[@id="travelDashboardForm:searchFilter_2"]')
+            airlinePNR = driver.find_element(By.XPATH, '//*[@id="travelDashboardForm:searchFilter_10"]')
             airlinePNR.click()
 
             # Click on Search Value
             WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="travelDashboardForm:searchInputText"]')))
             time.sleep(1)
             searchValue = driver.find_element(By.XPATH, '//*[@id="travelDashboardForm:searchInputText"]')
+            searchValue.clear()
             searchValue.send_keys(search_id)
             searchValue.send_keys(Keys.RETURN)
 
@@ -189,13 +190,13 @@ def automation(idList):
             try:
 
                 # Click on Emulate Button
-                WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.XPATH, '/html/body/div[1]/div[1]/div[2]/div/div[3]/div/form/div[6]/div/table/tbody/tr/td[7]/button')))
-                emulateButton = driver.find_element(By.XPATH, '/html/body/div[1]/div[1]/div[2]/div/div[3]/div/form/div[6]/div/table/tbody/tr/td[7]/button')
+                WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.XPATH, '/html/body/div[2]/div/div[5]/form/div[1]/div[4]/div/table/tbody/tr/td[7]/div[2]/button')))
+                emulateButton = driver.find_element(By.XPATH, '/html/body/div[2]/div/div[5]/form/div[1]/div[4]/div/table/tbody/tr/td[7]/div[2]/button')                                        
                 emulateButton.click()
 
                 # Click on Show Detail
-                WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="travelDashboardForm:tripListDT_data"]/tr/td[7]/div[2]')))
-                showDetail = driver.find_element(By.XPATH, '//*[@id="travelDashboardForm:tripListDT_data"]/tr/td[7]/div[2]')
+                WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="travelDashboardForm:tripListDT_data"]/tr/td[8]/div')))
+                showDetail = driver.find_element(By.XPATH, '//*[@id="travelDashboardForm:tripListDT_data"]/tr/td[8]/div')
                 showDetail.click()
 
                 # Click on View Summary
