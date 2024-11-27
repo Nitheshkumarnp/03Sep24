@@ -35,7 +35,7 @@ def read_ids_from_excel(file_path, lower_limit, upper_limit):
     workbook = openpyxl.load_workbook(file_path)
     sheet = workbook.active
     ids = []
-    for row in sheet.iter_rows(min_row=lower_limit, max_row=upper_limit, max_col=1, values_only=True):  # Assuming IDs are in the first column
+    for row in sheet.iter_rows(min_row=lower_limit, max_row=upper_limit, max_col=1, values_only=True):  # type: ignore # Assuming IDs are in the first column
         ids.append(row[0])
     return ids
 
@@ -111,13 +111,13 @@ WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.XPATH, '//*
 pushButton = driver.find_element(By.XPATH, '//*[@id="form97"]/div[2]/input')
 pushButton.click()
 
-# PHX Booking India
-WebDriverWait(driver, 300).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="main-content"]/section/section/section/div/section/div[14]')))
-fcmTab = driver.find_element(By.XPATH, '//*[@id="main-content"]/section/section/section/div/section/div[14]')
+# FCM Booking India
+WebDriverWait(driver, 300).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="main-content"]/section/section/section/div/section/div[10]')))
+fcmTab = driver.find_element(By.XPATH, '//*[@id="main-content"]/section/section/section/div/section/div[10]')
 fcmTab.click()
 
 # Waiting time to close the login tab and setting for stop pdf automatic openning after download
-time.sleep(150)
+time.sleep(timeToLoad)
 
 # Get handles of all currently open windows
 window_handles = driver.window_handles
@@ -191,7 +191,8 @@ def automation(idList):
 
                 # Click on Emulate Button
                 WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.XPATH, '/html/body/div[2]/div/div[5]/form/div[1]/div[4]/div/table/tbody/tr/td[7]/div[2]/button')))
-                emulateButton = driver.find_element(By.XPATH, '/html/body/div[2]/div/div[5]/form/div[1]/div[4]/div/table/tbody/tr/td[7]/div[2]/button')                                        
+                emulateButton = driver.find_element(By.XPATH, '/html/body/div[2]/div/div[5]/form/div[1]/div[4]/div/table/tbody/tr/td[7]/div[2]/button')
+                                                                
                 emulateButton.click()
 
                 # Click on Show Detail
@@ -247,7 +248,7 @@ def automation(idList):
         logging.info(f'Cart Numbers not found :  {CartNumbersNotFound}')
 
         # Returning the Updated result
-        return f'Total Rows = {index+1}, Last PNR = {search_id}, Total Invoice downloaded = {totalInvoiceDownloaded}'
+        return f'Total Rows = {index+1}, Last PNR = {search_id}, Total Invoice downloaded = {totalInvoiceDownloaded}' # type: ignore
 
     except:
 
@@ -258,7 +259,7 @@ def automation(idList):
         logging.info(f'Cart Numbers not found :  {CartNumbersNotFound}')
         
         # Returning the Updated result
-        return f'Total Rows = {index+1}, Last PNR = {search_id}, Total Invoice downloaded = {totalInvoiceDownloaded}'
+        return f'Total Rows = {index+1}, Last PNR = {search_id}, Total Invoice downloaded = {totalInvoiceDownloaded}' # type: ignore
 
 # Running Automation
 result = automation(ids_to_search)
